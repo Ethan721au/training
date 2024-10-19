@@ -8,14 +8,17 @@ export default function Square({
   colIndex,
   rowIndex,
   player,
+  winner,
 }: {
   value: number;
   action: (newInput: number, rowIndex: number, colIndex: number) => void;
   colIndex: number;
   rowIndex: number;
   player: string;
+  winner: string | undefined;
 }) {
   const updateInput = () => {
+    if (winner) return;
     if (value !== 0) return;
     if (player === "Circle") {
       action(-1, rowIndex, colIndex);

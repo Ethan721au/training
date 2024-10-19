@@ -11,8 +11,8 @@ export default function TicTacToe() {
     [0, 0, 0],
   ];
   const [player, setPlayer] = useState("Circle");
+  const [winner, setWinner] = useState<string | undefined>(undefined);
   const [matrix, setMatrix] = useState(defaultMatrix);
-  // console.log(matrix);
 
   const recordInput = (
     newInput: number,
@@ -30,61 +30,57 @@ export default function TicTacToe() {
   };
 
   const determineWinner = (matrix: number[][]) => {
-    console.log(matrix, "matrix");
+    const checkResult = (result: number) => {
+      if (result === 3) {
+        setWinner("Cross");
+      }
+      if (result === -3) {
+        setWinner("Circle");
+      }
+    };
 
     //horizontal
     const horizontal = matrix.map((row) => row.reduce((a, b) => a + b, 0));
-    console.log(horizontal, "horizontal");
     for (let i = 0; i < horizontal.length; i++) {
-      console.log(horizontal[i], "horizontal[i]");
-      if (horizontal[i] === 3) {
-        console.log("Cross wins");
-      }
-      if (horizontal[i] === -3) {
-        console.log("Circle wins");
-      }
+      checkResult(horizontal[i]);
     }
 
-    // const sum = numbers.reduce((accumulator, currentValue) => {
-    //   return accumulator + currentValue;
-    // }, 0);
+    //vertical
+    for (let i = 0; i < matrix.length; i++) {
+      const vertical = matrix.map((row) => row[i]);
+      const sumCol = vertical.reduce((a, b) => a + b, 0);
+      checkResult(sumCol);
+    }
 
-    // const winningCombos = [
-    //   // horizontal
-    //   [0, 1, 2],
-    //   [3, 4, 5],
-    //   [6, 7, 8],
-    //   // vertical
-    //   [0, 3, 6],
-    //   [1, 4, 7],
-    //   [2, 5, 8],
-    //   // diagonal
-    //   [0, 4, 8],
-    //   [2, 4, 6],
-    // ];
+    //diagonal
+    let diagonal1 = 0;
+    let diagonal2 = 0;
+    const matrixSize = matrix.length;
 
-    // for (let i = 0; i < winningCombos.length; i++) {
-    //   const [a, b, c] = winningCombos[i];
-    //   console.log(a);
-    //   if (
-    //     matrix[a] &&
-    //     matrix[a] === matrix[b] &&
-    //     matrix[a] === matrix[c] &&
-    //     matrix[a] !== 0
-    //   ) {
-    //     console.log("winner");
-    //     return matrix[a];
-    //   }
-    // }
+    for (let i = 0; i < matrixSize; i++) {
+      // Directly access diagonal elements
+      diagonal1 += matrix[i][i];
+      diagonal2 += matrix[i][matrixSize - i - 1];
+    }
+
+    // Check the results after the loop
+    checkResult(diagonal1);
+    checkResult(diagonal2);
+  };
+
+  const resetGame = () => {
+    setMatrix(defaultMatrix);
+    setPlayer("Circle");
+    setWinner(undefined);
   };
 
   return (
     <>
-      <div>{player}</div>
+      {winner ? <h1>{winner} wins</h1> : <div>Player turn: {player}</div>}
       {matrix &&
         matrix.map((row, rowIndex) => (
           <div key={rowIndex} className={styles.container}>
-            {row.map((col, colIndex) => (
+            {row.map((_, colIndex) => (
               <Square
                 key={colIndex}
                 colIndex={colIndex}
@@ -92,18 +88,12 @@ export default function TicTacToe() {
                 value={matrix[rowIndex][colIndex]}
                 action={recordInput}
                 player={player}
+                winner={winner}
               />
             ))}
           </div>
         ))}
-      <button
-        onClick={() => {
-          setMatrix(defaultMatrix);
-          setPlayer("Circle");
-        }}
-      >
-        reset
-      </button>
+      <button onClick={() => resetGame()}>reset</button>
     </>
   );
 }
