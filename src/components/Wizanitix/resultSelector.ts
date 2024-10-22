@@ -1,7 +1,8 @@
-export default function resultSelector(
-  results: string[]
-  // probabilities: object
-) {
-  const randomResult = results[Math.floor(Math.random() * results.length)];
-  return randomResult;
+export default function resultSelector(results: string[], opponents: object[]) {
+  const winProbability =
+    opponents[0].elo / (opponents[0].elo + opponents[1].elo);
+
+  const outcome = Math.random() < winProbability ? "win" : "loss";
+
+  return outcome;
 }

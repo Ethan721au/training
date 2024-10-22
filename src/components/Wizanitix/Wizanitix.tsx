@@ -26,7 +26,7 @@ export default function Wizanitix() {
     gamePlayed.current += 1;
     const opponents = determineOpponents();
     console.log("opponents", opponents);
-    const outcome = resultSelector(outcomes);
+    const outcome = resultSelector(outcomes, opponents);
     console.log("outcome", outcome);
 
     setPlayers((prevPlayers) => {
