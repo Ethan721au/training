@@ -12,7 +12,6 @@ export default function Wizanitix() {
   const intervalID = useRef();
   const gamePlayed = useRef(0);
   const [recentMatches, setRecentMatches] = useState([]);
-  console.log(recentMatches, "recentMatches");
 
   const determineOpponents = () => {
     const firstOpponent = players[Math.floor(Math.random() * players.length)];
@@ -26,42 +25,37 @@ export default function Wizanitix() {
   };
 
   const updateElo = () => {
-    console.log("updateElo");
     gamePlayed.current += 1;
     const opponents = determineOpponents();
-    console.log("opponents", opponents);
     const outcome = resultSelector(opponents);
-    console.log("outcome", outcome);
+
+    const eloExchange = determineEloScore(
+      opponents[0].elo,
+      opponents[1].elo,
+      outcome
+    );
 
     setPlayers((prevPlayers) => {
-      const updatedPlayers = [...prevPlayers].map((player) =>
-        player.id === opponents[0].id
-          ? {
-              ...player,
-              elo:
-                outcome === "win"
-                  ? player.elo +
-                    determineEloScore(player.elo, opponents[1].elo, "win")
-                  : player.elo +
-                    determineEloScore(player.elo, opponents[1].elo, "loss"),
-              wins: outcome === "win" ? player.wins + 1 : player.wins,
-              losses: outcome === "loss" ? player.losses + 1 : player.losses,
-            }
-          : player.id === opponents[1].id
-            ? {
-                ...player,
-                elo:
-                  outcome === "win"
-                    ? player.elo +
-                      determineEloScore(player.elo, opponents[0].elo, "loss")
-                    : player.elo +
-                      determineEloScore(player.elo, opponents[0].elo, "win"),
-                wins: outcome === "loss" ? player.wins + 1 : player.wins,
-                losses: outcome === "win" ? player.losses + 1 : player.losses,
-              }
-            : player
-      );
-      console.log("updatedPlayers", updatedPlayers);
+      const [player1, player2] = opponents;
+
+      const updatedPlayers = prevPlayers.map((player) => {
+        if (player.id === player1.id) {
+          return {
+            ...player,
+            elo: player.elo + eloExchange,
+            wins: outcome === "win" ? player.wins + 1 : player.wins,
+            losses: outcome === "loss" ? player.losses + 1 : player.losses,
+          };
+        } else if (player.id === player2.id) {
+          return {
+            ...player,
+            elo: player.elo - eloExchange,
+            wins: outcome === "loss" ? player.wins + 1 : player.wins,
+            losses: outcome === "win" ? player.losses + 1 : player.losses,
+          };
+        }
+        return player;
+      });
 
       return updatedPlayers;
     });
@@ -70,14 +64,13 @@ export default function Wizanitix() {
       const newEntry = {
         outcome: outcome,
         opponents: opponents,
-        // eloExchange: opponents[0].elo - {()=>{return 1}},
+        eloExchange: Math.abs(eloExchange).toFixed(0),
+        date: new Date().toDateString(),
       };
-      const uppdatedData =
-        prev.length < maxRecentMatches
-          ? [...prev, newEntry]
-          : [...prev.slice(1), newEntry];
-      console.log("uppdatedData", uppdatedData);
-      return uppdatedData;
+
+      return prev.length < maxRecentMatches
+        ? [newEntry, ...prev]
+        : [newEntry, ...prev.slice(0, prev.length - 1)];
     });
   };
 
@@ -144,6 +137,8 @@ export default function Wizanitix() {
             <div key={index}>{match.outcome}</div>
             <div>{match.opponents[0].name}</div>
             <div>{match.opponents[1].name}</div>
+            <div>{match.eloExchange}</div>
+            <div>{match.date}</div>
           </>
         ))}
       </div>
