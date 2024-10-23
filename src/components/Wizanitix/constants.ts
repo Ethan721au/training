@@ -1,6 +1,6 @@
 export const startingElo = 1000;
 
-export const outcomes = ["win", "loss"];
+export const maxRecentMatches = 14;
 
 export const defaultPlayers = [
   {
@@ -48,3 +48,10 @@ export const defaultPlayers = [
 ];
 
 export const k = 32;
+
+export const eloForumla = (elo: number, opponentElo: number) => {
+  const formula =
+    Math.pow(10, elo / 400) /
+    (Math.pow(10, elo / 400) + Math.pow(10, opponentElo / 400));
+  return formula;
+};

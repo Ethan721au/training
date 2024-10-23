@@ -1,0 +1,4 @@
+.table tr {
+  display: flex;
+  gap: 10px;
+}
