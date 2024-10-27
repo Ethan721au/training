@@ -55,3 +55,7 @@ export const eloForumla = (elo: number, opponentElo: number) => {
     (Math.pow(10, elo / 400) + Math.pow(10, opponentElo / 400));
   return formula;
 };
+
+// MONGO_PUBLIC_KEY = eliwzfvf
+// MONGO_PRIVATE_KEY = 89650af2-57d7-41b4-82c9-3c7ef5c0cfb1
+// prject ID: 65de878d176d481541dd738e
